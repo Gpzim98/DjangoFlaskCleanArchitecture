@@ -6,6 +6,7 @@ class BookingDto(object):
     checkin: datetime
     checkout: datetime
     customer: CustomerDto
+    status: str
 
     def __init__(self, checkin: datetime, checkout: datetime, customer: CustomerDto):
         self.checkin = checkin
@@ -17,4 +18,9 @@ class BookingDto(object):
 
     def to_dto(self, booking: Booking):
         customer_dto = self.customer.to_dto(booking.customer)
-        return BookingDto(checkin=booking.checkin, checkout=booking.checkout, customer=customer_dto)
+        booking_dto = BookingDto(
+            checkin=booking.checkin, 
+            checkout=booking.checkout, 
+            customer=customer_dto)
+        booking_dto.status = booking.status.name
+        return booking_dto

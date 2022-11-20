@@ -3,13 +3,7 @@ from booking_service.domain.customers.exceptions import *
 from datetime import datetime
 from booking_service.domain.customers.entities import Customer
 from booking_service.domain.rooms.entities import Room
-from enum import Enum
-
-class BookingStatuses(Enum):
-    OPEN = 0
-    RESERVED = 1 
-    FINISHED = 2
-    CANCELED = 3
+from .enums import BookingStatuses
 
 class Booking(object):
     checkin: datetime

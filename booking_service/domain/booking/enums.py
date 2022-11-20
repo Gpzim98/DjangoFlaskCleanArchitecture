@@ -9,3 +9,9 @@ class ErrorCodes(Enum):
 
 class SuccessCodes(Enum):
     SUCCESS = 'Success'
+
+class BookingStatuses(Enum):
+    OPEN = 0
+    RESERVED = 1 
+    FINISHED = 2
+    CANCELED = 3

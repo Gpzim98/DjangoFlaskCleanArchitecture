@@ -14,16 +14,17 @@ class BookingRepository(BookingStorage):
 
         return customer
 
-    def _booking_dto_to_model(self, bookingDto: BookingDto):
+    def _booking_dto_to_model(self, booking_dto: BookingDto):
         booking = Booking()
-        booking.checkin = bookingDto.checkin
-        booking.checkout = bookingDto.checkout
+        booking.checkin = booking_dto.checkin
+        booking.checkout = booking_dto.checkout
+        booking.status = booking_dto.status
         return booking
 
     @transaction.atomic
-    def save_booking(self, bookingDto: BookingDto):
-        customer = self._customer_dto_to_model(bookingDto.customer)
+    def save_booking(self, booking_dto: BookingDto):
+        customer = self._customer_dto_to_model(booking_dto.customer)
         customer.save()
-        booking = self._booking_dto_to_model(bookingDto)
+        booking = self._booking_dto_to_model(booking_dto)
         booking.customer = customer
         booking.save()
