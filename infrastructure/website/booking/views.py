@@ -3,6 +3,7 @@ from datetime import datetime
 from booking_service.application.booking.booking_manager import BookingManager
 from booking_service.application.booking.booking_dto import BookingDto
 from booking_service.application.customers.customer_dto import CustomerDto
+from .repositories import BookingRepository
 
 def home(request):
     return render(request, 'index.html')
@@ -18,7 +19,9 @@ def create_new(request):
     customer_dto = CustomerDto(name, age, document, email)
 
     dto = BookingDto(checkin, checkout, customer_dto)
-    res = BookingManager().create_new_booking(dto)
+    repository = BookingRepository()
+    manager = BookingManager(repository)
+    res = manager.create_new_booking(dto)
 
     if res['code'] != 'SUCCESS':
         return render(request, 'index.html', {'res': res})
