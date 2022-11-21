@@ -12,6 +12,13 @@
     <div class="container">
         <h1>Booking Page</h1>
         {{ res }}
+
+        <ul>
+          {% for booking in bookings %}
+            <li>{{booking.customer.name}} - {{booking.checkin}}</li>
+          {% endfor %}
+        </ul>
+
         <form  action="create-new" method="POST">
             {% csrf_token %}
 

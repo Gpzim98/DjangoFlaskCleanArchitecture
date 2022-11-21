@@ -1,6 +1,7 @@
 import unittest
 from datetime import datetime, timedelta
 import sys
+from booking_service.application.booking.booking_dto import UserDto
 sys.path.append('..')
 sys.path.append('../..')
 from domain.booking.exceptions import *
@@ -14,10 +15,43 @@ class DummyStorage(BookingStorage):
     def save_booking(self, bookingDto: BookingDto):
         return True
 
+    def get_all_bookings(self):
+        checkin = datetime.today()
+        checkout = datetime.today()
+        customer = CustomerDto("Customer", 18, "doc123", "a@a.com")
+        booking_dto1 = BookingDto(checkin, checkout, customer)
+
+        customer = CustomerDto("Customer", 18, "doc123", "a@a.com")
+        booking_dto2 = BookingDto(checkin, checkout, customer)
+        admin_bookings = [booking_dto1, booking_dto2]
+        return admin_bookings
+
+    def get_filtered_bookings(self):
+        checkin = datetime.today()
+        checkout = datetime.today()
+        customer = CustomerDto("Customer", 18, "doc123", "a@a.com")
+        booking_dto1 = BookingDto(checkin, checkout, customer)
+
+        filtered_bookings = [booking_dto1]
+
+        return filtered_bookings
+
 class BookingAggregateManagerTests(unittest.TestCase):
     def __init__(self, methodName: str = ...) -> None:
         self.dummy_storage = DummyStorage()
         super().__init__(methodName)
+
+    def test_get_all_bookings_admin(self):
+        manager = BookingManager(self.dummy_storage)
+        user_dto = UserDto('admin', True)
+        bookings = manager.get_bookings(user_dto)
+        self.assertEqual(len(bookings), 2)
+
+    def test_get_all_bookings_non_admin(self):
+        manager = BookingManager(self.dummy_storage)
+        user_dto = UserDto('non_admin', False)
+        bookings = manager.get_bookings(user_dto)
+        self.assertEqual(len(bookings), 1)
 
     def test_checkin_date_cannot_be_after_checkout(self):
         checkin = datetime.today()

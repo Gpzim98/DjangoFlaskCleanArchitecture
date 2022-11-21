@@ -1,12 +1,16 @@
 from django.shortcuts import render
 from datetime import datetime
 from booking_service.application.booking.booking_manager import BookingManager
-from booking_service.application.booking.booking_dto import BookingDto
+from booking_service.application.booking.booking_dto import *
 from booking_service.application.customers.customer_dto import CustomerDto
 from .repositories import BookingRepository
 
 def home(request):
-    return render(request, 'index.html')
+    user_dto = UserDto(request.user.first_name, request.user.is_superuser)
+    repository = BookingRepository()
+    manager = BookingManager(repository)
+    bookings = manager.get_bookings(user_dto)
+    return render(request, 'index.html', {'bookings': bookings})
 
 def create_new(request):
     checkin = datetime.strptime(request.POST.get('checkin'),  "%Y-%m-%dT%H:%M")

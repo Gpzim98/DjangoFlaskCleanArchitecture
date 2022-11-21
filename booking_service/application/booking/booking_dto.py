@@ -24,3 +24,12 @@ class BookingDto(object):
             customer=customer_dto)
         booking_dto.status = booking.status.name
         return booking_dto
+
+class UserDto(object):
+    name: str
+    is_admin: bool
+
+    def __init__(self, name: str, is_admin: bool) -> None:
+        self.name = name
+        self.is_admin = is_admin
+
