@@ -5,6 +5,8 @@ class ErrorCodes(Enum):
     CUSTOMERISREQUIRED = "Customer is required"
     CUSTOMERSHOULDBEOLDERTHAN18 = 'Customer should be older than 18'
     INVALIDCUSTOMERDOCUMENT = 'Invalid customer document'
+    USERNOTALLOWEDTOACCESSDATA = 'User not allowed to access this data'
+    UPDATEBOOKINGREQUIRESBOOKINGID = 'Cannot update a booking without its id'
     UNDEFINED = 'Undefined'
 
 class SuccessCodes(Enum):

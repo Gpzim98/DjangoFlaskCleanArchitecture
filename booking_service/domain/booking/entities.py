@@ -1,4 +1,4 @@
-from .exceptions import CheckinDateCannotBeAfterCheckoutDate, CustomerCannotBeBlank
+from .exceptions import *
 from booking_service.domain.customers.exceptions import *
 from datetime import datetime
 from booking_service.domain.customers.entities import Customer
@@ -12,16 +12,24 @@ class Booking(object):
     status: BookingStatuses
     margin: float
     room: Room
+    id: int
 
     def __init__(self, checkin: datetime, checkout: datetime, customer: Customer):
         self.checkin = checkin
         self.checkout = checkout
         self.customer = customer
         self.status = BookingStatuses.OPEN
+        self.id = None
     
     def create_booking(self):
         self.is_valid()
         self.status = BookingStatuses.RESERVED
+
+    def update_booking(self):
+        self.is_valid()
+
+        if not self.id:
+            raise BookingUpdateRequiresExistingBookingId('Cannot update a record without its Id')
 
     def is_valid(self):
         if self.checkin > self.checkout:

@@ -2,6 +2,7 @@ import unittest
 from datetime import datetime, timedelta
 import sys
 from booking_service.application.booking.booking_dto import UserDto
+from booking_service.domain.booking.enums import BookingStatuses
 sys.path.append('..')
 sys.path.append('../..')
 from domain.booking.exceptions import *
@@ -14,6 +15,26 @@ from application.booking.booking_storage import BookingStorage
 class DummyStorage(BookingStorage):
     def save_booking(self, bookingDto: BookingDto):
         return True
+
+    def get_booking_by_id(self, id) -> BookingDto:
+        if id == 1:
+            checkin = datetime.today()
+            checkout = datetime.today()
+            customer = CustomerDto("Customer", 18, "doc123", "a@a.com")
+            booking_dto = BookingDto(checkin=checkin, checkout=checkout, customer=customer)
+            booking_dto.id = 1
+            booking_dto.status = BookingStatuses.CANCELED.name
+        else:
+            checkin = datetime.today()
+            checkout = datetime.today()
+            customer = CustomerDto("Customer", 18, "doc123", "a@a.com")
+            booking_dto = BookingDto(checkin=checkin, checkout=checkout, customer=customer)
+            booking_dto.id = 2
+            booking_dto.status = BookingStatuses.RESERVED
+        return booking_dto
+
+    def update_booking(self, booking_dto: BookingDto):
+        pass
 
     def get_all_bookings(self):
         checkin = datetime.today()
@@ -88,6 +109,69 @@ class BookingAggregateManagerTests(unittest.TestCase):
         manager = BookingManager(self.dummy_storage)
         res = manager.create_new_booking(booking_dto)
         self.assertEqual(res['code'], 'SUCCESS')
+
+    def test_get_booking_by_id_admin_should_see_canceled_bookings(self):
+        user_dto = UserDto('admin', True)
+        manager = BookingManager(self.dummy_storage)
+        res = manager.get_booking_by_id(1, user_dto)
+        self.assertEqual(res['code'], 'SUCCESS')
+    
+    def test_get_booking_by_id_non_admin_should_not_see_canceled_bookings(self):
+        user_dto = UserDto('non_admin', False)
+        manager = BookingManager(self.dummy_storage)
+        res = manager.get_booking_by_id(1, user_dto)
+        self.assertEqual(res['code'], 'USERNOTALLOWEDTOACCESSDATA')
+
+    def test_get_booking_by_id_admin_should_see_not_canceled_bookings(self):
+        user_dto = UserDto('admin', True)
+        manager = BookingManager(self.dummy_storage)
+        res = manager.get_booking_by_id(2, user_dto)
+        self.assertEqual(res['code'], 'SUCCESS')
+
+    def test_get_booking_by_id_non_admin_should_see_not_canceled_bookings(self):
+        user_dto = UserDto('non_admin', False)
+        manager = BookingManager(self.dummy_storage)
+        res = manager.get_booking_by_id(2, user_dto)
+        self.assertEqual(res['code'], 'SUCCESS')
+
+    def test_update_booking_requires_booking_id(self):
+        checkin = datetime.utcnow()
+        checkout = datetime.today()
+        customer = CustomerDto("Customer", 18, "doc123", "a@a.com")
+        booking_dto = BookingDto(checkin=checkin, checkout=checkout, customer=customer)
+        manager = BookingManager(self.dummy_storage)
+        res = manager.update_booking(booking_dto)
+        self.assertEqual(res['code'], 'UPDATEBOOKINGREQUIRESBOOKINGID')
+
+    def test_update_booking_should_fail_if_customer_is_not_older_than_18(self):
+        checkin = datetime.utcnow()
+        checkout = datetime.today()
+        customer = CustomerDto("Customer", 17, "doc123", "a@a.com")
+        booking_dto = BookingDto(checkin=checkin, checkout=checkout, customer=customer)
+        booking_dto.id = 1
+        manager = BookingManager(self.dummy_storage)
+        res = manager.update_booking(booking_dto)
+        self.assertEqual(res['code'], 'CUSTOMERSHOULDBEOLDERTHAN18')
+
+    def test_update_booking_should_fail_if_customer_doc_is_invalid(self):
+        checkin = datetime.utcnow()
+        checkout = datetime.today()
+        customer = CustomerDto("Customer", 18, "inv", "a@a.com")
+        booking_dto = BookingDto(checkin=checkin, checkout=checkout, customer=customer)
+        booking_dto.id = 1
+        manager = BookingManager(self.dummy_storage)
+        res = manager.update_booking(booking_dto)
+        self.assertEqual(res['code'], 'INVALIDCUSTOMERDOCUMENT')    
+
+    def test_update_booking_happy_path(self):
+        checkin = datetime.utcnow()
+        checkout = datetime.today()
+        customer = CustomerDto("Customer", 18, "doc123", "a@a.com")
+        booking_dto = BookingDto(checkin=checkin, checkout=checkout, customer=customer)
+        booking_dto.id = 1
+        manager = BookingManager(self.dummy_storage)
+        res = manager.update_booking(booking_dto)
+        self.assertEqual(res['code'], 'SUCCESS')    
 
 if __name__ == '__main__':
     unittest.main()

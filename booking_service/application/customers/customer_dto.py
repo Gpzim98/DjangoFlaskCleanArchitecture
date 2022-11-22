@@ -5,12 +5,14 @@ class CustomerDto(object):
     age: int
     document: str
     email: str
+    id: int
 
     def __init__(self, name: str, age: int, document: str, email: str) -> None:
         self.name = name
         self.age = age
         self.document = document
         self.email = email
+        self.id = None
 
     def to_domain(self):
         customer = Customer(self.name, self.age, self.document, self.email)

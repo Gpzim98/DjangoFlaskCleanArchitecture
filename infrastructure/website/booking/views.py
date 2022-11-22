@@ -16,11 +16,7 @@ def create_new(request):
     checkin = datetime.strptime(request.POST.get('checkin'),  "%Y-%m-%dT%H:%M")
     checkout = datetime.strptime(request.POST.get('checkout'),"%Y-%m-%dT%H:%M")
 
-    name = request.POST.get('name')
-    age = int(request.POST.get('age'))
-    document = request.POST.get('document')
-    email = request.POST.get('email')
-    customer_dto = CustomerDto(name, age, document, email)
+    customer_dto = get_customer_from_request(request)
 
     dto = BookingDto(checkin, checkout, customer_dto)
     repository = BookingRepository()
@@ -31,3 +27,42 @@ def create_new(request):
         return render(request, 'index.html', {'res': res})
     else:
         return render(request, 'confirmation.html')
+
+
+def update(request, id):
+    user_dto = UserDto(request.user.first_name, request.user.is_superuser)
+    repository = BookingRepository()
+    manager = BookingManager(repository)
+
+    if request.method == 'GET':
+        resp = manager.get_booking_by_id(id, user_dto)
+        if resp['code'] == 'SUCCESS':
+            resp['checkin']  = resp['data'].checkin.strftime("%Y-%m-%dT%H:%M")
+            resp['checkout'] = resp['data'].checkout.strftime("%Y-%m-%dT%H:%M")
+            return render(request, 'update.html', resp)
+        else:
+            return render(request, 'index.html', {'res': resp['message']})
+    elif request.method == 'POST':
+        checkin = datetime.strptime(request.POST.get('checkin'),  "%Y-%m-%dT%H:%M")
+        checkout = datetime.strptime(request.POST.get('checkout'),"%Y-%m-%dT%H:%M")
+
+        customer_dto = get_customer_from_request(request)
+        dto = BookingDto(checkin, checkout, customer_dto)
+        dto.id = id
+        repository = BookingRepository()
+        manager = BookingManager(repository)
+        res = manager.update_booking(dto)
+
+        if res['code'] != 'SUCCESS':
+            return render(request, 'index.html', {'res': res})
+        else:
+            return render(request, 'confirmation.html')
+
+def get_customer_from_request(request):
+    name = request.POST.get('name')
+    age = int(request.POST.get('age'))
+    document = request.POST.get('document')
+    email = request.POST.get('email')
+    customer_dto = CustomerDto(name, age, document, email)
+    return customer_dto
+    
