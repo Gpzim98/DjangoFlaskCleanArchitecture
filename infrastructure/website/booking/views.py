@@ -1,12 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import HttpResponse, render
 from datetime import datetime
 from booking_service.application.booking.booking_manager import BookingManager
 from booking_service.application.booking.booking_dto import *
 from booking_service.application.customers.customer_dto import CustomerDto
 from .repositories import BookingRepository
+from django.shortcuts import redirect
 
 def home(request):
     user_dto = UserDto(request.user.first_name, request.user.is_superuser)
+    user_dto.id = request.user.id
     repository = BookingRepository()
     manager = BookingManager(repository)
     bookings = manager.get_bookings(user_dto)
@@ -58,6 +60,15 @@ def update(request, id):
         else:
             return render(request, 'confirmation.html')
 
+def delete(request, id):
+    repository = BookingRepository()
+    manager = BookingManager(repository)
+    res = manager.delete_booking(id)
+    if res['code'] == 'SUCCESS':
+        return render(request, 'delete_confirmation.html')
+    else:
+        return HttpResponse(res['message'])
+
 def get_customer_from_request(request):
     name = request.POST.get('name')
     age = int(request.POST.get('age'))
@@ -65,4 +76,3 @@ def get_customer_from_request(request):
     email = request.POST.get('email')
     customer_dto = CustomerDto(name, age, document, email)
     return customer_dto
-    

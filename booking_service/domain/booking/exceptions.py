@@ -9,3 +9,7 @@ class CustomerCannotBeBlank(Exception):
 class BookingUpdateRequiresExistingBookingId(Exception):
     def __init__(self, message):
         self.message = message
+
+class BookingWithThisStatusCannotBeDeleted(Exception):
+    def __init__(self, message):
+        self.message = message

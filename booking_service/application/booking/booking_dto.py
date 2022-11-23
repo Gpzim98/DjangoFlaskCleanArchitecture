@@ -18,6 +18,7 @@ class BookingDto(object):
     def to_domain(self):
         booking = Booking(self.checkin, self.checkout, self.customer.to_domain())
         booking.id = self.id
+        booking.status = self.status
         return booking
 
     def to_dto(self, booking: Booking):
@@ -31,6 +32,7 @@ class BookingDto(object):
         return booking_dto
 
 class UserDto(object):
+    id: int
     name: str
     is_admin: bool
 

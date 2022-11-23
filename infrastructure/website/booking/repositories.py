@@ -51,7 +51,7 @@ class BookingRepository(BookingStorage):
             bookings_dto.append(self._model_to_dto(booking))
         return bookings_dto
 
-    def get_filtered_bookings(self):
+    def get_filtered_bookings(self, user_id: int):
         bookings = Booking.objects.exclude(status=BookingStatuses.CANCELED.name)
         bookings_dto = []
         for booking in bookings:
@@ -73,3 +73,7 @@ class BookingRepository(BookingStorage):
         booking.customer.save()
         booking.save()
 
+    def delete_booking(self, booking_dto: BookingDto):
+        booking = Booking.objects.get(id=booking_dto.id)
+        booking.status = booking_dto.status
+        booking.save()

@@ -7,6 +7,7 @@ class ErrorCodes(Enum):
     INVALIDCUSTOMERDOCUMENT = 'Invalid customer document'
     USERNOTALLOWEDTOACCESSDATA = 'User not allowed to access this data'
     UPDATEBOOKINGREQUIRESBOOKINGID = 'Cannot update a booking without its id'
+    BOOKINGSTATUSDOESNOTALLOWDELETE = 'Booking with this status does not allow delete'
     UNDEFINED = 'Undefined'
 
 class SuccessCodes(Enum):
@@ -17,3 +18,4 @@ class BookingStatuses(Enum):
     RESERVED = 1 
     FINISHED = 2
     CANCELED = 3
+    DELETED = 4

@@ -5,6 +5,7 @@ BOOKING_STATUSES = [
         ('RESERVED', 'Reserved'),
         ('FINISHED', 'Finishd'),
         ('CANCELED', 'Canceled'),
+        ('DELETED', 'Deleted'),
     ]
 
 class Customer(models.Model):

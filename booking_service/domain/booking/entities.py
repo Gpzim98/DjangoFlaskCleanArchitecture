@@ -25,6 +25,14 @@ class Booking(object):
         self.is_valid()
         self.status = BookingStatuses.RESERVED
 
+    def delete_booking(self):
+        self.is_valid()
+
+        if self.status == BookingStatuses.CANCELED.name:
+            raise BookingWithThisStatusCannotBeDeleted('Booking is in a status that does not allow delte')
+
+        self.status = BookingStatuses.DELETED
+
     def update_booking(self):
         self.is_valid()
 

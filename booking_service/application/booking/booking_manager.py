@@ -14,7 +14,7 @@ class BookingManager(object):
         if user_dto.is_admin:
             return self.storage.get_all_bookings()
         else:
-            return self.storage.get_filtered_bookings()
+            return self.storage.get_filtered_bookings(user_dto.id)
 
     def get_booking_by_id(self, booking_id: int, user_dto: UserDto):
         booking = self.storage.get_booking_by_id(booking_id)
@@ -61,3 +61,26 @@ class BookingManager(object):
             return {'message': ErrorCodes.UPDATEBOOKINGREQUIRESBOOKINGID.value, 'code': ErrorCodes.UPDATEBOOKINGREQUIRESBOOKINGID.name}
         except Exception as e:
             return {'message': ErrorCodes.UNDEFINED.value, 'code': ErrorCodes.UNDEFINED.name}
+
+    def delete_booking(self, booking_id: int):
+        try:
+            booking = self.storage.get_booking_by_id(booking_id)
+            domain_aggregate = booking.to_domain()
+            domain_aggregate.delete_booking()
+            final_dto = booking.to_dto(domain_aggregate)
+            self.storage.delete_booking(final_dto)
+            return {'message': SuccessCodes.SUCCESS.value, 'code': SuccessCodes.SUCCESS.name}
+        except BookingWithThisStatusCannotBeDeleted as e:
+            return {'message': ErrorCodes.BOOKINGSTATUSDOESNOTALLOWDELETE.value, 'code': ErrorCodes.BOOKINGSTATUSDOESNOTALLOWDELETE.name}
+        except CheckinDateCannotBeAfterCheckoutDate as e:
+            return {'message': ErrorCodes.CHECKINAFTERCHECKOUT.value, 'code': ErrorCodes.CHECKINAFTERCHECKOUT.name}
+        except CustomerCannotBeBlank as e:
+            return {'message': ErrorCodes.CUSTOMERISREQUIRED.value, 'code': ErrorCodes.CUSTOMERISREQUIRED.name}
+        except CustomerShouldBeOlderThan18 as e:
+            return {'message': ErrorCodes.CUSTOMERSHOULDBEOLDERTHAN18.value, 'code': ErrorCodes.CUSTOMERSHOULDBEOLDERTHAN18.name}
+        except InvalidCustomerDocumentException as e:
+            return {'message': ErrorCodes.INVALIDCUSTOMERDOCUMENT.value, 'code': ErrorCodes.INVALIDCUSTOMERDOCUMENT.name}
+        except Exception as e:
+            return {'message': ErrorCodes.UNDEFINED.value, 'code': ErrorCodes.UNDEFINED.name}
+
+        

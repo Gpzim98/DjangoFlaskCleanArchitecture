@@ -23,4 +23,8 @@ class BookingStorage(ABC):
     def update_booking(self, booking_dto: BookingDto):
         pass
 
+    @abstractclassmethod
+    def delete_booking(self, booking_dto: BookingDto):
+        pass
+
     
