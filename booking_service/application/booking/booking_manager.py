@@ -14,7 +14,7 @@ class BookingManager(object):
         if user_dto.is_admin:
             return self.storage.get_all_bookings()
         else:
-            return self.storage.get_filtered_bookings(user_dto.id)
+            return self.storage.get_filtered_bookings()
 
     def get_booking_by_id(self, booking_id: int, user_dto: UserDto):
         booking = self.storage.get_booking_by_id(booking_id)
@@ -82,5 +82,3 @@ class BookingManager(object):
             return {'message': ErrorCodes.INVALIDCUSTOMERDOCUMENT.value, 'code': ErrorCodes.INVALIDCUSTOMERDOCUMENT.name}
         except Exception as e:
             return {'message': ErrorCodes.UNDEFINED.value, 'code': ErrorCodes.UNDEFINED.name}
-
-        

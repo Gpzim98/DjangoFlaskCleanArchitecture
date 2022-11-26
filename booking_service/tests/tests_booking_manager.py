@@ -56,6 +56,9 @@ class DummyStorage(BookingStorage):
         filtered_bookings = [booking_dto1]
 
         return filtered_bookings
+    
+    def delete_booking(self, booking_dto: BookingDto):
+        pass
 
 class BookingAggregateManagerTests(unittest.TestCase):
     def __init__(self, methodName: str = ...) -> None:
@@ -71,6 +74,7 @@ class BookingAggregateManagerTests(unittest.TestCase):
     def test_get_all_bookings_non_admin(self):
         manager = BookingManager(self.dummy_storage)
         user_dto = UserDto('non_admin', False)
+        user_dto.id = 1
         bookings = manager.get_bookings(user_dto)
         self.assertEqual(len(bookings), 1)
 

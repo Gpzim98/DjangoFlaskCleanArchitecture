@@ -1,6 +1,7 @@
 from datetime import datetime
 from booking_service.domain.booking.entities import Booking
 from booking_service.application.customers.customer_dto import CustomerDto
+from booking_service.domain.booking.enums import BookingStatuses
 
 class BookingDto(object):
     id: int
@@ -14,11 +15,12 @@ class BookingDto(object):
         self.checkout = checkout
         self.customer = customer
         self.id = None
+        self.status = BookingStatuses.OPEN.name
 
     def to_domain(self):
         booking = Booking(self.checkin, self.checkout, self.customer.to_domain())
         booking.id = self.id
-        booking.status = self.status
+        booking.status = BookingStatuses[self.status]
         return booking
 
     def to_dto(self, booking: Booking):
