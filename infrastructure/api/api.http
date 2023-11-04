@@ -1,1 +1,20 @@
-GET http://127.0.0.1:5000/
+# GET http://127.0.0.1:5000/bookings
+# Content-Type: application/json
+# Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoibm9uYWRtaW4iLCJpc19hZG1pbiI6ZmFsc2UsImV4cCI6MTY2OTU4NzAxMH0.qX1k8L0zsdCG2Moo6zrALJLNI5yeC2iSBV2LXuOMhls
+
+
+# POST http://127.0.0.1:5000/create-booking 
+# Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJpc19hZG1pbiI6dHJ1ZSwiZXhwIjoxNjY5NjgxNzUwfQ.fT7zKzZrCHHfuBe91qJYG4GVTsuWAnmAdhcxxkTc3ng
+# content-type: application/json
+
+# {
+#     "name": "Fulano1",
+#     "checkin": "2022-12-15T12:00",
+#     "checkout": "2022-12-15T12:00",
+#     "age": 18,
+#     "document": "12333",
+#     "email": "fulanodetal2@gmail.com"
+# }
+
+DELETE http://127.0.0.1:5000/delete-booking/5
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJpc19hZG1pbiI6dHJ1ZSwiZXhwIjoxNjY5NzE5Mzc0fQ.d9Bwho_hZ4Ko-gyxnGv1KTre4jrMN7RVpP847295pDQ

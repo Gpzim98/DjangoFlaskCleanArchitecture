@@ -2,7 +2,7 @@ from flask import Flask, make_response, request, session
 import jwt
 from datetime import datetime, timedelta
 from .models import db
-from .repositories import BookingRepository, UserRepository, BookingManager, UserDto
+from .repositories import BookingRepository, UserRepository, BookingManager, UserDto, BookingDto, CustomerDto
 from functools import wraps
 
 app = Flask(__name__)
@@ -55,6 +55,45 @@ def bookings():
 
     bookings = manager.get_bookings(user_dto)
     return get_serializable_booking_list(bookings)
+
+
+@app.route('/create-booking', methods=['POST'])
+@token_required
+def create_booking():
+    data = request.get_json()
+    checkin = datetime.strptime(data['checkin'],  "%Y-%m-%dT%H:%M")
+    checkout = datetime.strptime(data['checkout'],"%Y-%m-%dT%H:%M")
+
+    customer_dto = get_customer_dto_from_request(data)
+
+    booking_dto = BookingDto(checkin, checkout, customer_dto)
+    repository = BookingRepository()
+    manager = BookingManager(repository)
+    resp = manager.create_new_booking(booking_dto)
+
+    if resp['code'] == 'SUCCESS':
+        return make_response(resp, 201)
+    
+    return make_response(resp, 400)
+
+@app.route('/delete-booking/<id>', methods=['DELETE'])
+@token_required
+def delete_booking(id):
+    repository = BookingRepository()
+    manager = BookingManager(repository)
+    resp = manager.delete_booking(id)
+    
+    if resp['code'] == 'SUCCESS':
+        return make_response(resp, 201)
+    
+    return make_response(resp, 400)
+
+def get_customer_dto_from_request(data):
+    name = data['name']
+    age = int(data['age'])
+    document = data['document']
+    email = data['email']
+    return CustomerDto(name, age, document, email)
 
 def get_serializable_booking_list(bookings):
     booking_list = []

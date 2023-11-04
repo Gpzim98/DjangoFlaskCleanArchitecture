@@ -10,17 +10,30 @@ class BookingRepository(BookingStorage):
     def __init__(self):
         self.db = db
 
-    def save_booking(self, bookingDto: BookingDto):
-        pass
+    def save_booking(self, booking_dto: BookingDto):
+        customer = booking_dto.customer
+        new = Customer(
+            name=customer.name, age=customer.age, document=customer.document, email=customer.email)
+        db.session.add(new)
+        db.session.commit()
+        db.session.flush() 
+
+        booking = Booking(status=booking_dto.status, checkin=booking_dto.checkin, checkout=booking_dto.checkout, customer_id=new.id)
+        db.session.add(booking)
+        db.session.commit()
 
     def get_booking_by_id(self, id) -> BookingDto:
-        pass
+        booking = Booking.query.get(id)
+        customer = Customer.query.get(booking.customer_id)
+        return self._model_to_dto(booking, customer)
 
     def update_booking(self, booking_dto: BookingDto):
         pass
 
     def delete_booking(self, booking_dto: BookingDto):
-        pass
+        booking = Booking.query.get(booking_dto.id)
+        booking.status = booking_dto.status
+        db.session.commit()
 
     def _model_to_dto(self, booking: Booking, customer: Customer):
         customer_dto = CustomerDto(customer.name, customer.age, customer.document, customer.email)
